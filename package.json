@@ -2,6 +2,6 @@
   "name": "astrolabe-app",
   "type": "module",
   "dependencies": {
-    "openai": "^4.0.0"
+    "groq-sdk": "^0.8.0"
   }
 }

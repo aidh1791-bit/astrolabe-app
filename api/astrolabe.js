@@ -1,8 +1,8 @@
-// Vercel serverless function for ASTROLABE AI generation
-import OpenAI from "openai";
+// Vercel serverless function for ASTROLABE AI generation using Groq (FREE!)
+import Groq from "groq-sdk";
 
-const client = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY 
+const groq = new Groq({ 
+  apiKey: process.env.GROQ_API_KEY 
 });
 
 export default async function handler(req, res) {
@@ -68,15 +68,16 @@ Virtue/Goal: ${virtue}
 
 Create a personalized ASTROLABE reflection plan for this scenario.`;
 
-    // Call OpenAI API
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+    // Call Groq API (FREE!)
+    const response = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile", // Fast, free, and very capable!
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.7
+      temperature: 0.7,
+      max_tokens: 2000
     });
 
     const jsonText = response.choices[0].message.content;
@@ -95,7 +96,7 @@ Create a personalized ASTROLABE reflection plan for this scenario.`;
     // Return helpful error message
     if (error.message.includes("API key")) {
       return res.status(500).json({ 
-        error: "OpenAI API key not configured. Add OPENAI_API_KEY to Vercel environment variables." 
+        error: "Groq API key not configured. Add GROQ_API_KEY to Vercel environment variables." 
       });
     }
     
