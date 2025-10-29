@@ -52,7 +52,7 @@
   <header>
     <div class="inner">
       <h1>✨ ASTROLABE Reflection Navigator</h1>
-      <div class="subtitle">Transform any scenario into a clear 9-step action plan</div>
+      <div class="subtitle">Islamic framework for structured self-improvement and tarbiyah</div>
     </div>
   </header>
 
@@ -74,13 +74,20 @@
           <textarea id="g_description" placeholder="What happened? Who was involved? What triggered it? How did you feel?"></textarea>
           
           <label>Virtue / Goal</label>
-          <input id="g_virtue" placeholder="e.g., Patience, Confidence, Honesty">
+          <input id="g_virtue" placeholder="e.g., Sabr (Patience), Istiqamah (Consistency), Ikhlas (Sincerity)">
+          
+          <label>Age Group</label>
+          <select id="g_age_group">
+            <option value="adult">Adult (18+)</option>
+            <option value="teen">Teen (13-17)</option>
+            <option value="kid">Kid (8-12)</option>
+          </select>
           
           <div class="actions">
             <button class="btn primary" id="btn-generate">Generate Reflection</button>
           </div>
           
-          <p class="muted">💡 Fill in your scenario and click generate. The AI will create a personalized 9-step ASTROLABE reflection for you. Powered by Groq - completely free!</p>
+          <p class="muted">💡 Fill in your scenario and click generate. The AI will create a personalized 9-step ASTROLABE reflection using Islamic wisdom and practical psychology. Powered by Groq - completely free, alhamdulillah!</p>
         </div>
 
         <div class="card">
@@ -165,10 +172,13 @@
 
         <div class="card">
           <h2>B - Buddy & Broadcast</h2>
-          <label>Who will you tell?</label>
-          <input id="j_buddy" placeholder="Name of accountability partner">
-          <label>Specific feedback you want</label>
-          <textarea id="j_feedback" placeholder="What do you want them to watch for?"></textarea>
+          <p class="muted">Accountability hierarchy: Parents → Mentors → Teachers → Friends → Rivals</p>
+          <label>Primary accountability (Parents/Mentors)</label>
+          <input id="j_buddy_primary" placeholder="e.g., Parent, spiritual mentor, coach">
+          <label>Secondary (Teachers/Friends)</label>
+          <input id="j_buddy_secondary" placeholder="e.g., Ustadh/Ustadha, study buddy">
+          <label>What specific feedback/support do you need?</label>
+          <textarea id="j_feedback" placeholder="e.g., Check on me at 7:30 AM, review my progress weekly, hold me to my commitment"></textarea>
         </div>
 
         <div class="card">
@@ -291,7 +301,7 @@
   function J(id){ return document.getElementById(id)?.value?.trim() || '—'; }
   
   function buildSummary(){
-    return `ASTROLABE REFLECTION
+    return `ASTROLABE REFLECTION (بسم الله)
 Date: ${new Date().toLocaleDateString()}
 Scenario: ${J('g_scenario')}
 Description: ${J('g_description')}
@@ -331,12 +341,16 @@ Metric: ${J('j_metric')}
 Log location: ${J('j_log')}
 
 B — BUDDY
-Who: ${J('j_buddy')}
-Feedback wanted: ${J('j_feedback')}
+Primary: ${J('j_buddy_primary')}
+Secondary: ${J('j_buddy_secondary')}
+Feedback needed: ${J('j_feedback')}
 
 E — EVOLVE
 Review date: ${J('j_review')}
 Prompts: ${J('j_prompts')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+الحمد لله — May Allah grant you success and istiqamah.
 `;
   }
 
