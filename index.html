@@ -3,153 +3,201 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ASTROLABE — Reflection Generator + Journal</title>
+  <title>ASTROLABE - Reflection Navigator</title>
   <style>
     :root {
       --indigo:#667eea; --violet:#764ba2; --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280;
     }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color:#111; }
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color:#111; }
     header { background: linear-gradient(135deg, var(--indigo), var(--violet)); color:#fff; padding:28px 16px; }
-    header .inner { max-width: 1100px; margin:0 auto; display:flex; align-items: center; justify-content: space-between; gap:16px; }
-    h1 { margin:0; font-size: 24px; }
+    header .inner { max-width: 1100px; margin:0 auto; }
+    h1 { margin:0 0 8px; font-size: 26px; }
+    .subtitle { font-size: 14px; opacity: 0.9; }
     .wrap { max-width:1100px; margin:20px auto; padding:0 16px; }
     .tabs { display:flex; gap:10px; margin-bottom:16px; flex-wrap: wrap; }
-    .tab-btn { border:none; background:#e8eaff; color:#334; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .tab-btn { border:none; background:#e8eaff; color:#334; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:600; transition: all 0.2s; }
+    .tab-btn:hover { background:#d5d8ff; }
     .tab-btn.active { background: var(--indigo); color:#fff; }
     .cards { display:grid; grid-template-columns: 1fr; gap:16px; }
-    @media (min-width: 768px) { .cards { grid-template-columns: 1fr 1fr; } } /* Fix #6 */
-    .card { background:var(--card); border:1px solid #e5e7eb; border-radius:12px; padding:16px; box-shadow:0 10px 24px rgba(0,0,0,0.05); }
-    .card h2 { margin:6px 0 12px; font-size:18px; }
-    label { display:block; font-weight:600; margin:10px 0 6px; }
+    @media (min-width: 768px) { .cards { grid-template-columns: 1fr 1fr; } }
+    .card { background:var(--card); border:1px solid #e5e7eb; border-radius:12px; padding:20px; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
+    .card h2 { margin:0 0 16px; font-size:18px; color:#374151; }
+    label { display:block; font-weight:600; margin:12px 0 6px; font-size: 14px; color:#374151; }
     input[type=text], textarea, select {
       width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font:inherit; background:#fff;
     }
-    textarea { min-height: 90px; resize: vertical; }
-    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:none; border-radius:8px; cursor:pointer; font-weight:700; }
+    textarea { min-height: 90px; resize: vertical; font-family: inherit; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition: all 0.2s; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn.primary { background: var(--indigo); color:#fff; }
+    .btn.primary:hover:not(:disabled) { background: #5568d3; }
     .btn.ghost { background:#eef2ff; color:#30344b; }
-    .muted { color: var(--muted); font-size: 13px; }
-    .result { background:#f3f4f6; padding:12px; border-radius:8px; white-space:pre-wrap; border:1px solid #e5e7eb; }
-    .accordion { border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; }
+    .btn.ghost:hover { background:#e0e7ff; }
+    .muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .result { background:#f9fafb; padding:14px; border-radius:8px; white-space:pre-wrap; border:1px solid #e5e7eb; font-size: 14px; line-height: 1.6; }
+    .accordion { border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; margin-top: 12px; }
     .acc-item + .acc-item { border-top:1px solid #e5e7eb; }
-    .acc-head { width:100%; text-align:left; background:#fafafa; padding:12px 14px; border:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
-    .acc-body { max-height:0; overflow:hidden; transition:max-height .25s ease; background:#fff; }
-    .acc-body-inner { padding:12px 14px; }
+    .acc-head { width:100%; text-align:left; background:#fafafa; padding:14px 16px; border:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight: 600; transition: background 0.2s; }
+    .acc-head:hover { background:#f3f4f6; }
+    .acc-body { max-height:0; overflow:hidden; transition:max-height .3s ease; background:#fff; }
+    .acc-body-inner { padding:14px 16px; line-height: 1.6; color:#374151; }
     .ok { color:#10b981; font-weight:700; }
+    .error { color:#ef4444; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .cost-warning { background:#fef3c7; border:1px solid #fbbf24; padding:12px; border-radius:8px; margin-top:12px; font-size:13px; }
   </style>
 </head>
 <body>
   <header>
     <div class="inner">
-      <h1>✨ ASTROLABE — Reflection Generator + Journal</h1>
-      <div class="muted">Step by step journey through ATTUNE → SIGNAL → TEST → RUN FUTURES → OPTIONS → LOCK-IN → ACCOUNT → BUDDY → EVOLVE</div>
+      <h1>✨ ASTROLABE Reflection Navigator</h1>
+      <div class="subtitle">Transform any scenario into a clear 9-step action plan</div>
     </div>
   </header>
 
   <div class="wrap">
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" data-tab="generator">AI Generator</button>
-      <button class="tab-btn" data-tab="journal">Journal / Diary</button>
-      <button class="tab-btn" data-tab="summary">Summary / Export</button>
+      <button class="tab-btn" data-tab="journal">Journal</button>
+      <button class="tab-btn" data-tab="summary">Summary</button>
     </div>
 
     <div id="panels">
-      <!-- AI GENERATOR -->
       <section class="cards tab-panel" id="panel-generator" style="display:grid;">
         <div class="card">
-          <h2>AI Inputs</h2>
+          <h2>Generate Your Plan</h2>
           <label>Scenario</label>
-          <input id="g_scenario" placeholder="e.g., 'Failed my driving test' or 'Team conflict at work'"><!-- Fix #7 -->
+          <input id="g_scenario" placeholder="e.g., 'Failed my driving test' or 'Team conflict at work'">
+          
           <label>Description</label>
-          <textarea id="g_description" placeholder="Describe what happened: Who was involved? What triggered it? What did you do? How did it end?"></textarea><!-- Fix #7 -->
+          <textarea id="g_description" placeholder="What happened? Who was involved? What triggered it? How did you feel?"></textarea>
+          
           <label>Virtue / Goal</label>
-          <input id="g_virtue" placeholder="e.g., Patience, Honesty, Focus"><!-- Fix #7 -->
+          <input id="g_virtue" placeholder="e.g., Patience, Confidence, Honesty">
+          
           <div class="actions">
-            <button class="btn primary" id="btn-generate">Generate Plan</button>
+            <button class="btn primary" id="btn-generate">Generate Reflection</button>
           </div>
-          <p class="muted">Generate your ASTROLABE plan. Each step will connect to your journal.</p>
+          
+          <p class="muted">💡 Fill in your scenario and click generate. The AI will create a personalized 9-step ASTROLABE reflection for you.</p>
+          
+          <div class="cost-warning">
+            💰 <strong>Cost Notice:</strong> Each generation costs approximately $0.001-0.01. Make sure you've added billing to your OpenAI account.
+          </div>
         </div>
 
         <div class="card">
-          <h2>AI Reflection Plan (9 Steps)</h2>
-          <div id="genStatus" class="muted">No plan yet.</div>
-          <div id="genResult" class="accordion" style="margin-top:8px;"></div>
+          <h2>Your AI Plan</h2>
+          <div id="genStatus" class="muted">No plan generated yet. Fill in the form and click "Generate Reflection".</div>
+          <div id="genResult" class="accordion"></div>
         </div>
       </section>
 
-      <!-- JOURNAL -->
       <section class="tab-panel" id="panel-journal" style="display:none;">
         <div class="card">
-          <h2>Journal Fields</h2>
-          <p class="muted">Each box is labeled with its ASTROLABE step.</p>
+          <h2>Manual Journal Entry</h2>
+          <p class="muted">Fill in each step of your ASTROLABE reflection manually.</p>
         </div>
 
         <div class="card">
-          <h2>A — ATTUNE (Step 1)</h2>
-          <label>Fact</label><textarea id="j_fact"></textarea>
-          <label>Feeling</label><input id="j_feeling">
-          <label>Body cue</label><input id="j_body">
+          <h2>A - Attune</h2>
+          <label>Fact (what actually happened)</label>
+          <textarea id="j_fact" placeholder="Just the facts, no interpretation"></textarea>
+          <label>Feeling</label>
+          <input id="j_feeling" placeholder="Name the emotion">
+          <label>Body sensation</label>
+          <input id="j_body" placeholder="Where do you feel it physically?">
         </div>
 
         <div class="card">
-          <h2>S — SIGNAL (Step 2)</h2>
-          <label>Value / Virtue</label><input id="j_virtue">
-          <label>My 1% upgrade</label><textarea id="j_upgrade"></textarea>
+          <h2>S - Signal the Virtue</h2>
+          <label>Value at stake</label>
+          <input id="j_virtue" placeholder="What value matters here?">
+          <label>My 1% upgrade</label>
+          <textarea id="j_upgrade" placeholder="What small shift can you make?"></textarea>
         </div>
 
         <div class="card">
-          <h2>T — TEST (Step 3)</h2>
-          <label>Snap-story</label><textarea id="j_snap"></textarea>
-          <label>Better belief</label><textarea id="j_belief"></textarea>
+          <h2>T - Test the Tale</h2>
+          <label>Snap-story (your initial judgment)</label>
+          <textarea id="j_snap" placeholder="What story are you telling yourself?"></textarea>
+          <label>Better belief</label>
+          <textarea id="j_belief" placeholder="What's a more helpful perspective?"></textarea>
         </div>
 
         <div class="card">
-          <h2>R — RUN FUTURES (Step 4)</h2>
-          <label>If this repeats...</label><textarea id="j_future"></textarea>
+          <h2>R - Run Futures</h2>
+          <label>If this pattern repeats...</label>
+          <textarea id="j_future" placeholder="What happens in 1 month? 1 year?"></textarea>
+          <label>Premortem & Guardrails</label>
+          <textarea id="j_premortem" placeholder="What could go wrong? How will you prevent it?"></textarea>
         </div>
 
         <div class="card">
-          <h2>O — OPTIONS (Step 5)</h2>
-          <label>Conserve</label><textarea id="j_conserve"></textarea>
-          <label>Experiment</label><textarea id="j_experiment"></textarea>
-          <label>Leap</label><textarea id="j_leap"></textarea>
+          <h2>O - Options Triangle</h2>
+          <label>Conserve (small tweak)</label>
+          <textarea id="j_conserve" placeholder="Minimal change to current approach"></textarea>
+          <label>Experiment (pilot test)</label>
+          <textarea id="j_experiment" placeholder="Low-risk trial"></textarea>
+          <label>Leap (bold change)</label>
+          <textarea id="j_leap" placeholder="Major shift"></textarea>
+          <label>Chosen option</label>
+          <select id="j_choice">
+            <option value="">- select -</option>
+            <option>Conserve</option>
+            <option>Experiment</option>
+            <option>Leap</option>
+          </select>
         </div>
 
         <div class="card">
-          <h2>L — LOCK-IN (Step 6)</h2>
-          <label>Implementation rule (IF–THEN)</label><textarea id="j_routine"></textarea>
+          <h2>L - Lock-in the System</h2>
+          <label>Implementation intention</label>
+          <textarea id="j_routine" placeholder="IF [trigger], THEN [action]"></textarea>
+          <label>Ethics & equity check</label>
+          <textarea id="j_ethics" placeholder="Who might this affect? Is it fair?"></textarea>
         </div>
 
         <div class="card">
-          <h2>A — ACCOUNT (Step 7)</h2>
-          <label>Metric</label><input id="j_metric">
+          <h2>A - Account</h2>
+          <label>Metric (simple count)</label>
+          <input id="j_metric" placeholder="e.g., Days practiced, times I paused">
+          <label>Log location</label>
+          <input id="j_log" placeholder="e.g., Phone notes, journal, calendar">
         </div>
 
         <div class="card">
-          <h2>B — BUDDY (Step 8)</h2>
-          <label>Who will you tell?</label><input id="j_buddy">
+          <h2>B - Buddy & Broadcast</h2>
+          <label>Who will you tell?</label>
+          <input id="j_buddy" placeholder="Name of accountability partner">
+          <label>Specific feedback you want</label>
+          <textarea id="j_feedback" placeholder="What do you want them to watch for?"></textarea>
         </div>
 
         <div class="card">
-          <h2>E — EVOLVE (Step 9)</h2>
-          <label>Review date</label><input id="j_review">
+          <h2>E - Evolve</h2>
+          <label>Review date</label>
+          <input id="j_review" type="text" placeholder="e.g., in 1 week - set in your calendar">
+          <label>Review prompts</label>
+          <textarea id="j_prompts">What worked? What didn't? Keep / Tweak / Retire? Any belief shift?</textarea>
         </div>
 
         <div class="card">
-          <button class="btn primary" id="btn-build-summary">Build Summary</button>
-          <button class="btn ghost" id="btn-clear">Clear All</button>
+          <div class="actions">
+            <button class="btn primary" id="btn-build-summary">Build Summary</button>
+            <button class="btn ghost" id="btn-clear">Clear All</button>
+          </div>
         </div>
       </section>
 
-      <!-- SUMMARY -->
       <section class="tab-panel" id="panel-summary" style="display:none;">
         <div class="card">
           <h2>Summary</h2>
           <div id="summaryOut" class="result"></div>
           <div class="actions">
-            <button class="btn primary" id="btn-copy">Copy</button>
+            <button class="btn primary" id="btn-copy">Copy to Clipboard</button>
+            <button class="btn ghost" id="btn-download">Download .txt</button>
           </div>
         </div>
       </section>
@@ -157,13 +205,13 @@
   </div>
 
 <script>
-  // Tab switching
   const tabs = document.querySelectorAll('.tab-btn');
   const panels = {
     generator: document.getElementById('panel-generator'),
     journal: document.getElementById('panel-journal'),
     summary: document.getElementById('panel-summary'),
   };
+  
   tabs.forEach(btn => btn.addEventListener('click', () => {
     tabs.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -172,70 +220,80 @@
     document.getElementById('panel-'+tab).style.display = (tab==='generator'?'grid':'block');
   }));
 
-  // Accordion render
   function renderAccordion(container, steps) {
     container.innerHTML = '';
     steps.forEach((s, idx) => {
       const item = document.createElement('div');
       item.className = 'acc-item';
       item.innerHTML = `
-        <button class="acc-head"><span><strong>${s.letter||String.fromCharCode(65+idx)}</strong> — ${s.title}</span><span>▼</span></button>
-        <div class="acc-body"><div class="acc-body-inner">${s.text}</div></div>`;
+        <button class="acc-head">
+          <span><strong>${s.letter||String.fromCharCode(65+idx)}</strong> - ${s.title||''}</span>
+          <span>▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">${(s.text||'').replace(/\n/g,'<br>')}</div>
+        </div>`;
       container.appendChild(item);
     });
+    
     container.querySelectorAll('.acc-head').forEach(head=>{
       head.addEventListener('click',()=>{
         const body = head.nextElementSibling;
         body.style.maxHeight = body.style.maxHeight ? '' : (body.scrollHeight + 'px');
       });
     });
-    // Fix #5: auto-open first item
+    
     const firstBody = container.querySelector('.acc-body');
     if (firstBody) firstBody.style.maxHeight = firstBody.scrollHeight + 'px';
   }
 
   let lastAI = { steps: [] };
 
-  // Generate button with loading protection (Fix #4)
   document.getElementById('btn-generate').addEventListener('click', async ()=>{
     const btn = document.getElementById('btn-generate');
-    btn.disabled = true;
-    const oldLabel = btn.textContent;
-    btn.textContent = '⏳ Generating...';
-
     const scenario = document.getElementById('g_scenario').value.trim();
     const description = document.getElementById('g_description').value.trim();
     const virtue = document.getElementById('g_virtue').value.trim();
     const status = document.getElementById('genStatus');
     const result = document.getElementById('genResult');
 
+    if(!scenario || !description || !virtue){
+      status.innerHTML = '<span class="error">⚠️ Please fill in all fields.</span>';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Generating...';
+    status.textContent = '⏳ Generating your reflection...';
+    result.innerHTML = '';
+
     try{
-      if(!scenario || !description || !virtue){
-        status.textContent = '⚠️ Fill all fields first.';
-        return;
-      }
-      status.textContent = '⏳ Generating...';
-      result.innerHTML = '';
-      const resp = await fetch('/api/astrolabe',{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({scenario, description, virtue})
+      const resp = await fetch('/api/astrolabe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scenario, description, virtue })
       });
-      const payload = await resp.json();
-      if(!resp.ok) throw new Error(payload?.error || 'Server error');
-      lastAI = payload;
-      status.textContent = '✓ Plan ready. Click steps to open.';
-      renderAccordion(result, payload.steps);
+      
+      if(!resp.ok) {
+        const err = await resp.json();
+        throw new Error(err.error || `Server error ${resp.status}`);
+      }
+      
+      const data = await resp.json();
+      lastAI = data;
+      status.innerHTML = '<span class="ok">✓ Plan ready!</span> Click each step to expand.';
+      renderAccordion(result, data.steps || []);
     } catch(e){
       console.error(e);
-      status.textContent = `❌ Error: ${e.message || 'Generation failed'}`; // Fix #3
+      status.innerHTML = `<span class="error">❌ Error: ${e.message}</span>`;
     } finally {
       btn.disabled = false;
-      btn.textContent = oldLabel;
+      btn.textContent = 'Generate Reflection';
     }
   });
 
-  // Build Summary with original context (Fix #8)
-  function J(id){ return document.getElementById(id)?.value?.trim()||'—'; }
+  function J(id){ return document.getElementById(id)?.value?.trim() || '—'; }
+  
   function buildSummary(){
     return `ASTROLABE REFLECTION
 Date: ${new Date().toLocaleDateString()}
@@ -243,15 +301,46 @@ Scenario: ${J('g_scenario')}
 Description: ${J('g_description')}
 Target Virtue: ${J('g_virtue')}
 
-A — ATTUNE: ${J('j_fact')} | Feeling: ${J('j_feeling')} | Body: ${J('j_body')}
-S — SIGNAL: ${J('j_virtue')} | Upgrade: ${J('j_upgrade')}
-T — TEST: Snap-story: ${J('j_snap')} | Belief: ${J('j_belief')}
-R — RUN FUTURES: ${J('j_future')}
-O — OPTIONS: Conserve: ${J('j_conserve')} | Experiment: ${J('j_experiment')} | Leap: ${J('j_leap')}
-L — LOCK-IN: ${J('j_routine')}
-A — ACCOUNT: Metric: ${J('j_metric')}
-B — BUDDY: ${J('j_buddy')}
-E — EVOLVE: Review: ${J('j_review')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A — ATTUNE
+Fact: ${J('j_fact')}
+Feeling: ${J('j_feeling')}
+Body cue: ${J('j_body')}
+
+S — SIGNAL
+Value: ${J('j_virtue')}
+My 1% upgrade: ${J('j_upgrade')}
+
+T — TEST THE TALE
+Snap-story: ${J('j_snap')}
+Better belief: ${J('j_belief')}
+
+R — RUN FUTURES
+If this repeats: ${J('j_future')}
+Premortem/Guardrails: ${J('j_premortem')}
+
+O — OPTIONS
+Conserve: ${J('j_conserve')}
+Experiment: ${J('j_experiment')}
+Leap: ${J('j_leap')}
+Chosen: ${J('j_choice')}
+
+L — LOCK-IN
+Implementation: ${J('j_routine')}
+Ethics check: ${J('j_ethics')}
+
+A — ACCOUNT
+Metric: ${J('j_metric')}
+Log location: ${J('j_log')}
+
+B — BUDDY
+Who: ${J('j_buddy')}
+Feedback wanted: ${J('j_feedback')}
+
+E — EVOLVE
+Review date: ${J('j_review')}
+Prompts: ${J('j_prompts')}
 `;
   }
 
@@ -260,19 +349,37 @@ E — EVOLVE: Review: ${J('j_review')}
     document.querySelector('.tab-btn[data-tab="summary"]').click();
   });
 
-  // Clear button with stronger confirm (Fix #9)
   document.getElementById('btn-clear').addEventListener('click',()=>{
-    if(!confirm('⚠️ This will delete ALL your journal entries (A–E). Are you sure?')) return;
-    document.querySelectorAll('#panel-journal input, #panel-journal textarea').forEach(el=>el.value='');
+    if(!confirm('⚠️ This will delete ALL your journal entries. Are you sure?')) return;
+    document.querySelectorAll('#panel-journal input, #panel-journal textarea').forEach(el=>{
+      if(el.id !== 'j_prompts') el.value='';
+    });
     document.getElementById('summaryOut').textContent='';
+    alert('Journal cleared.');
   });
 
-  // Copy
   document.getElementById('btn-copy').addEventListener('click', async ()=>{
-    const text=document.getElementById('summaryOut').textContent;
-    if(!text){alert('Nothing to copy.');return;}
+    const text = document.getElementById('summaryOut').textContent;
+    if(!text || text === '') {
+      alert('Build the summary first!');
+      return;
+    }
     await navigator.clipboard.writeText(text);
-    alert('Copied!');
+    alert('✓ Copied to clipboard!');
+  });
+
+  document.getElementById('btn-download').addEventListener('click', ()=>{
+    const text = document.getElementById('summaryOut').textContent;
+    if(!text || text === '') {
+      alert('Build the summary first!');
+      return;
+    }
+    const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `ASTROLABE_${new Date().toISOString().slice(0,10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   });
 </script>
 </body>

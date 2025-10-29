@@ -1,6 +1,7 @@
 {
+  "name": "astrolabe-app",
   "type": "module",
   "dependencies": {
-    "openai": "^5.0.0"
+    "openai": "^4.0.0"
   }
 }
